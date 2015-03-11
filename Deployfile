@@ -46,12 +46,12 @@ deploy:
       - container: application
 
   qa:
-    elb: qa-market
+    elb: qa-edmarket-search
     autoscaling:
-      autoscaling-group-od: qa-market
+      autoscaling-group-od: qa-market-search
 
   production:
     elb: prod-edmarket-search
     autoscaling:
-      autoscaling-group-spot: prod-market
+      autoscaling-group-spot: prod-market-search
 
