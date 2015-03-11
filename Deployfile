@@ -1,0 +1,57 @@
+include: Deployfile.defaults
+
+containers:
+  application:
+    all:
+      ports:
+        - 9200
+        - 9300
+
+    qa:
+      image: registry.edmodo.io/edmarket-search-qa
+
+    production:
+      image: registry.edmodo.io/edmarket-search-prod
+
+  edmarket-search-docker-proxy:
+    all:
+      base: docker-proxy
+      ports:
+        - host: 9200
+          local: 9200
+        - host: 9300
+          local: 9300
+
+      environment:
+        DOCKER_PROXY_STATUS_URL: :80/status.html
+        DOCKER_PROXY_STATUS_TIMEOUT: 90s
+
+    qa:
+      environment:
+        DOCKER_PROXY_TAG: registry.edmodo.io/edmarket-search-qa
+        DOCKER_PROXY_PORTS: 9200=9200,9300=9300,5672=5672
+
+    production:
+      environment:
+        DOCKER_PROXY_TAG: registry.edmodo.io/edmarket-search-prod
+        DOCKER_PROXY_PORTS: 9200=9200,9300=9300,5672=5672
+
+deploy:
+  all:
+    setup:
+      - container: edmarket-search-docker-proxy
+      - container: ami-base
+
+    steps:
+      - container: application
+
+  qa:
+    elb: qa-market
+    autoscaling:
+      autoscaling-group-od: qa-market
+
+  production:
+    elb: prod-edmarket-search
+    autoscaling:
+      autoscaling-group-spot: prod-market
+
