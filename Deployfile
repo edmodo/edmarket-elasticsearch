@@ -28,7 +28,7 @@ containers:
           local: 9300
 
       environment:
-        DOCKER_PROXY_STATUS_URL: :80/status.html
+        DOCKER_PROXY_STATUS_URL: :9200
         DOCKER_PROXY_STATUS_TIMEOUT: 90s
 
     qa:
