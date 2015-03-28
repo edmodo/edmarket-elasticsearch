@@ -3,9 +3,13 @@ include: Deployfile.defaults
 containers:
   application:
     all:
+      volumes:
+        - host: /mnt/log/edmarket
+          local: /var/log/edmarket
+        - host: /mnt/log/nginx
+          local: /var/log/nginx
       ports:
         - 9200
-        - 9300
 
     qa:
       image: registry.edmodo.io/edmarket-search-qa
@@ -13,14 +17,12 @@ containers:
     production:
       image: registry.edmodo.io/edmarket-search-prod
 
-  edmarket-search-docker-proxy:
+  edmarket-docker-proxy:
     all:
       base: docker-proxy
       ports:
         - host: 9200
           local: 9200
-        - host: 9300
-          local: 9300
 
       environment:
         DOCKER_PROXY_STATUS_URL: :80/status.html
@@ -29,29 +31,49 @@ containers:
     qa:
       environment:
         DOCKER_PROXY_TAG: registry.edmodo.io/edmarket-search-qa
-        DOCKER_PROXY_PORTS: 9200=9200,9300=9300,5672=5672
+        DOCKER_PROXY_PORTS: 9200=9200
 
     production:
       environment:
         DOCKER_PROXY_TAG: registry.edmodo.io/edmarket-search-prod
-        DOCKER_PROXY_PORTS: 9200=9200,9300=9300,5672=5672
+        DOCKER_PROXY_PORTS: 9200=9200
+
+  tracks-client: 
+    all:
+      image: registry.edmodo.io/tracks-client
+      name: tracks-client
+      ports:
+        - host: 2808
+          local: 2808
+      volumes:
+        - host: /mnt/log/td-agent-client
+          local: /var/log/td-agent
+    qa:
+      environment:
+        ENVIRONMENT: qa
+        
+    production:
+      environment:
+        ENVIRONMENT: prod
 
 deploy:
   all:
     setup:
-      - container: edmarket-search-docker-proxy
+      - container: edmarket-docker-proxy
       - container: ami-base
+      - container: tracks-client
 
     steps:
       - container: application
+      - cmd: mkdir -p /mnt/log/edmarket/celery
 
   qa:
-    elb: qa-edmarket-search
+    elb: qa-market-elasticsearch
     autoscaling:
-      autoscaling-group-od: qa-market-search
+      autoscaling-group-od: qa-market-elasticsearch
 
   production:
-    elb: prod-edmarket-search
+    elb: prod-market-elasticsearch
     autoscaling:
-      autoscaling-group-spot: prod-market-search
+      autoscaling-group-spot: prod-market-elasticsearch
 
