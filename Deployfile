@@ -10,6 +10,7 @@ containers:
           local: /var/log/nginx
       ports:
         - 9200
+        - 9300
 
     qa:
       image: registry.edmodo.io/edmarket-search-qa
@@ -23,6 +24,8 @@ containers:
       ports:
         - host: 9200
           local: 9200
+        - host: 9300
+          local: 9300
 
       environment:
         DOCKER_PROXY_STATUS_URL: :80/status.html
@@ -31,12 +34,12 @@ containers:
     qa:
       environment:
         DOCKER_PROXY_TAG: registry.edmodo.io/edmarket-search-qa
-        DOCKER_PROXY_PORTS: 9200=9200
+        DOCKER_PROXY_PORTS: 9200=9200,9300=9300
 
     production:
       environment:
         DOCKER_PROXY_TAG: registry.edmodo.io/edmarket-search-prod
-        DOCKER_PROXY_PORTS: 9200=9200
+        DOCKER_PROXY_PORTS: 9200=9200,9300=9300
 
   tracks-client: 
     all:
