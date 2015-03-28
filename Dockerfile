@@ -20,6 +20,9 @@ RUN \
 # Define mountable directories.
 VOLUME ["/data"]
 
+EXPOSE 9200
+EXPOSE 9300
+
 # Mount elasticsearch.yml config
 ADD elasticsearch.yml /elasticsearch/config/elasticsearch.yml
 
@@ -29,8 +32,3 @@ WORKDIR /data
 # Define default command.
 CMD ["/elasticsearch/bin/elasticsearch"]
 
-# Expose ports.
-#   - 9200: HTTP
-#   - 9300: transport
-EXPOSE 9200
-EXPOSE 9300
