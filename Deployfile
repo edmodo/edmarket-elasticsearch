@@ -18,6 +18,9 @@ containers:
     production:
       image: registry.edmodo.io/edmarket-search-prod
 
+    bahrain-production:
+      image: me-registry.edmodo.io/edmarket-search-prod
+
   edmarket-docker-proxy:
     all:
       base: docker-proxy
@@ -41,6 +44,12 @@ containers:
         DOCKER_PROXY_TAG: registry.edmodo.io/edmarket-search-prod
         DOCKER_PROXY_PORTS: 9200=9200,9300=9300
 
+    bahrain-production:
+      image: me-registry.edmodo.io/docker-proxy
+      environment:
+        DOCKER_PROXY_TAG: me-registry.edmodo.io/edmarket-search-prod
+        DOCKER_PROXY_PORTS: 9200=9200,9300=9300
+
   tracks-client: 
     all:
       image: registry.edmodo.io/tracks-client
@@ -58,6 +67,11 @@ containers:
     production:
       environment:
         ENVIRONMENT: prod
+
+    bahrain-production:
+      image: me-registry.edmodo.io/tracks-client
+      environment:
+        ENVIRONMENT: bahrain-prod
 
 deploy:
   all:
@@ -79,4 +93,9 @@ deploy:
     elb: prod-market-elasticsearch
     autoscaling:
       autoscaling-group-spot: prod-market-elasticsearch
+
+  bahrain-production:
+    elb: prod-market-elasticsearch
+    autoscaling:
+      autoscaling-group-spot: bahrain-prod-market-elasticsearch
 
